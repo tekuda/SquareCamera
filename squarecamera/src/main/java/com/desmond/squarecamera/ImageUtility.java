@@ -240,9 +240,9 @@ public class ImageUtility {
         }
 
         // Mediascanner need to scan for the image saved
-        Intent mediaScannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaScannerIntent.setData(uri);
-        context.sendBroadcast(mediaScannerIntent);
+//        Intent mediaScannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//        mediaScannerIntent.setData(uri);
+//        context.sendBroadcast(mediaScannerIntent);
 
         return uri;
 
