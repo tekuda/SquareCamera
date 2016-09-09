@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import java.io.File;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -28,8 +34,11 @@ public class EditSavePhotoFragment extends Fragment {
     public static final String BITMAP_KEY = "bitmap_byte_array";
     public static final String ROTATION_KEY = "rotation";
     public static final String IMAGE_INFO = "image_info";
+    public static final String IMAGE_URI = "image_uri";
 
     private static final int REQUEST_STORAGE = 1;
+
+    Uri uri;
 
     public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
                                        @NonNull ImageParameters parameters) {
@@ -43,7 +52,19 @@ public class EditSavePhotoFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+    public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
+                                       @NonNull ImageParameters parameters, Uri uri) {
+        Fragment fragment = new EditSavePhotoFragment();
 
+        Bundle args = new Bundle();
+        args.putByteArray(BITMAP_KEY, bitmapByteArray);
+        args.putInt(ROTATION_KEY, rotation);
+        args.putParcelable(IMAGE_INFO, parameters);
+        args.putParcelable(IMAGE_URI, uri);
+
+        fragment.setArguments(args);
+        return fragment;
+    }
     public EditSavePhotoFragment() {}
 
     @Override
@@ -59,6 +80,30 @@ public class EditSavePhotoFragment extends Fragment {
         int rotation = getArguments().getInt(ROTATION_KEY);
         byte[] data = getArguments().getByteArray(BITMAP_KEY);
         ImageParameters imageParameters = getArguments().getParcelable(IMAGE_INFO);
+
+        if (getArguments().containsKey(IMAGE_URI)){
+            uri=getArguments().getParcelable(IMAGE_URI);
+        }else{
+
+            File mediaStorageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    getActivity().getString(R.string.squarecamera__app_name)
+            );
+
+            if (!mediaStorageDir.exists()) {
+                if (!mediaStorageDir.mkdirs()) {
+                    return ;
+                }
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            File mediaFile = new File(
+                    mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg"
+            );
+
+            uri=Uri.fromFile(mediaFile);
+
+        }
 
         if (imageParameters == null) {
             return;
@@ -126,7 +171,7 @@ public class EditSavePhotoFragment extends Fragment {
                 ImageView photoImageView = (ImageView) view.findViewById(R.id.photo);
 
                 Bitmap bitmap = ((BitmapDrawable) photoImageView.getDrawable()).getBitmap();
-                Uri photoUri = ImageUtility.savePicture(getActivity(), bitmap);
+                Uri photoUri = ImageUtility.savePicture(getActivity(), bitmap,uri);
 
                 ((CameraActivity) getActivity()).returnPhotoUri(photoUri);
             }

@@ -11,20 +11,30 @@ public class CameraActivity extends AppCompatActivity {
 
     public static final String TAG = CameraActivity.class.getSimpleName();
 
+    public static final String IMAGE_URI = "image_uri";
+
+    Uri uri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.squarecamera__CameraFullScreenTheme);
         super.onCreate(savedInstanceState);
+
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.squarecamera__activity_camera);
 
+        if (getIntent().getExtras().containsKey(IMAGE_URI)){
+
+            uri=getIntent().getExtras().getParcelable(IMAGE_URI);
+        }
+
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, CameraFragment.newInstance(), CameraFragment.TAG)
+                    .replace(R.id.fragment_container, CameraFragment.newInstance(uri), CameraFragment.TAG)
                     .commit();
         }
     }

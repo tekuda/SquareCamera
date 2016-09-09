@@ -10,6 +10,7 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.Display;
 import android.view.WindowManager;
@@ -216,4 +217,35 @@ public class ImageUtility {
         }
     }
 
+    public static Uri savePicture(Context context, Bitmap bitmap, Uri uri) {
+        int cropHeight;
+        if (bitmap.getHeight() > bitmap.getWidth()) cropHeight = bitmap.getWidth();
+        else                                        cropHeight = bitmap.getHeight();
+
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, cropHeight, cropHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
+        File mediaFile = new File(uri.getPath());
+
+        // Saving the bitmap
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            FileOutputStream stream = new FileOutputStream(mediaFile);
+            stream.write(out.toByteArray());
+            stream.close();
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        // Mediascanner need to scan for the image saved
+        Intent mediaScannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScannerIntent.setData(uri);
+        context.sendBroadcast(mediaScannerIntent);
+
+        return uri;
+
+
+    }
 }

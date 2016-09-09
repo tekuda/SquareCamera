@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +20,10 @@ import android.widget.ImageView;
 
 import com.desmond.squarecamera.CameraActivity;
 import com.desmond.squarecamera.ImageUtility;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -88,7 +93,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void launch() {
+
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                getString(com.desmond.squarecamera.R.string.squarecamera__app_name)
+        );
+
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return ;
+            }
+        }
+
+        File mediaFile = new File(
+                mediaStorageDir.getPath() + File.separator + "IMG_1.jpg"
+        );
+
+        Uri uri=Uri.fromFile(mediaFile);
         Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+        startCustomCameraIntent.putExtra(CameraActivity.IMAGE_URI,uri);
         startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
     }
 
