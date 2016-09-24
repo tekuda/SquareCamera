@@ -17,23 +17,38 @@
         android:layout_below="@id/topView"
         android:scaleType="centerCrop"/>
 
-    <ImageButton
-        android:id="@+id/save_photo"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/squarecamera__save_photo_drawable"
-        android:background="@android:color/transparent"
-        android:layout_centerHorizontal="true"/>
 
-    <ImageButton
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:src="@drawable/squarecamera__cancel_drawable"
-        android:background="@android:color/transparent"
-        android:onClick="onCancel"/>
+        >
+        <ImageButton
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/squarecamera__cancel_drawable"
+            android:background="@android:color/transparent"
+            android:layout_marginRight="55dp"
+            android:onClick="onCancel"/>
+
+        <ImageButton
+            android:id="@+id/save_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/squarecamera__save_photo_drawable"
+            android:background="@android:color/transparent"
+            />
+
+
+    </LinearLayout>
+
+
+
 
 </RelativeLayout>

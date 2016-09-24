@@ -60,7 +60,7 @@ public class ImageUtility {
     public static Uri savePicture(Context context, Bitmap bitmap) {
         int cropHeight;
         if (bitmap.getHeight() > bitmap.getWidth()) cropHeight = bitmap.getWidth();
-        else                                        cropHeight = bitmap.getHeight();
+        else cropHeight = bitmap.getHeight();
 
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, cropHeight, cropHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
@@ -120,6 +120,7 @@ public class ImageUtility {
 
         return BitmapFactory.decodeFile(path, options);
     }
+
     /**
      * Decode and sample down a bitmap from a byte stream
      */
@@ -166,7 +167,7 @@ public class ImageUtility {
      * bitmaps using the decode* methods from {@link android.graphics.BitmapFactory}. This implementation calculates
      * the closest inSampleSize that is a power of 2 and will result in the final decoded bitmap
      * having a width and height equal to or larger than the requested width and height
-     *
+     * <p>
      * The function rounds up the sample size to a power of 2 or multiple
      * of 8 because BitmapFactory only honors sample size this way.
      * For example, BitmapFactory downsamples an image by 2 even though the
@@ -220,7 +221,7 @@ public class ImageUtility {
     public static Uri savePicture(Context context, Bitmap bitmap, Uri uri) {
         int cropHeight;
         if (bitmap.getHeight() > bitmap.getWidth()) cropHeight = bitmap.getWidth();
-        else                                        cropHeight = bitmap.getHeight();
+        else cropHeight = bitmap.getHeight();
 
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, cropHeight, cropHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
@@ -247,5 +248,35 @@ public class ImageUtility {
         return uri;
 
 
+    }
+
+    public static Uri savePicture(Context context, Bitmap bitmap, Uri uri, boolean saveToGallery) {
+        int cropHeight;
+        if (bitmap.getHeight() > bitmap.getWidth()) cropHeight = bitmap.getWidth();
+        else cropHeight = bitmap.getHeight();
+
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, cropHeight, cropHeight, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+
+        File mediaFile = new File(uri.getPath());
+
+        // Saving the bitmap
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            FileOutputStream stream = new FileOutputStream(mediaFile);
+            stream.write(out.toByteArray());
+            stream.close();
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+        if (saveToGallery) {
+            // Mediascanner need to scan for the image saved
+            Intent mediaScannerIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            mediaScannerIntent.setData(uri);
+            context.sendBroadcast(mediaScannerIntent);
+        }
+        return null;
     }
 }

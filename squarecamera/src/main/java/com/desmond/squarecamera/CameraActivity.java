@@ -12,8 +12,10 @@ public class CameraActivity extends AppCompatActivity {
     public static final String TAG = CameraActivity.class.getSimpleName();
 
     public static final String IMAGE_URI = "image_uri";
+    public static final String SAVE_TO_GALLERY = "save_to_gallery";
 
     Uri uri;
+    boolean saveToGallery;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.squarecamera__CameraFullScreenTheme);
@@ -29,6 +31,12 @@ public class CameraActivity extends AppCompatActivity {
         if (getIntent().getExtras().containsKey(IMAGE_URI)){
 
             uri=getIntent().getExtras().getParcelable(IMAGE_URI);
+        }
+        if (getIntent().getExtras().containsKey(SAVE_TO_GALLERY)){
+
+            saveToGallery=getIntent().getExtras().getBoolean(SAVE_TO_GALLERY);
+        }else{
+            saveToGallery=false;
         }
 
         if (savedInstanceState == null) {

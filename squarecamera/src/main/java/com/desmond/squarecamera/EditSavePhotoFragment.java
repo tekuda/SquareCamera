@@ -35,10 +35,13 @@ public class EditSavePhotoFragment extends Fragment {
     public static final String ROTATION_KEY = "rotation";
     public static final String IMAGE_INFO = "image_info";
     public static final String IMAGE_URI = "image_uri";
+    public static final String SAVE_TO_GALLERY = "save_to_gallery";
+
 
     private static final int REQUEST_STORAGE = 1;
 
     Uri uri;
+    boolean saveToGallery;
 
     public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
                                        @NonNull ImageParameters parameters) {
@@ -52,6 +55,7 @@ public class EditSavePhotoFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
                                        @NonNull ImageParameters parameters, Uri uri) {
         Fragment fragment = new EditSavePhotoFragment();
@@ -65,7 +69,24 @@ public class EditSavePhotoFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    public EditSavePhotoFragment() {}
+
+    public static Fragment newInstance(byte[] bitmapByteArray, int rotation,
+                                       @NonNull ImageParameters parameters, Uri uri, boolean saveToGallery) {
+        Fragment fragment = new EditSavePhotoFragment();
+
+        Bundle args = new Bundle();
+        args.putByteArray(BITMAP_KEY, bitmapByteArray);
+        args.putInt(ROTATION_KEY, rotation);
+        args.putParcelable(IMAGE_INFO, parameters);
+        args.putParcelable(IMAGE_URI, uri);
+        args.putBoolean(SAVE_TO_GALLERY, saveToGallery);
+
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public EditSavePhotoFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,9 +102,9 @@ public class EditSavePhotoFragment extends Fragment {
         byte[] data = getArguments().getByteArray(BITMAP_KEY);
         ImageParameters imageParameters = getArguments().getParcelable(IMAGE_INFO);
 
-        if (getArguments().containsKey(IMAGE_URI)){
-            uri=getArguments().getParcelable(IMAGE_URI);
-        }else{
+        if (getArguments().containsKey(IMAGE_URI)) {
+            uri = getArguments().getParcelable(IMAGE_URI);
+        } else {
 
             File mediaStorageDir = new File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
@@ -92,7 +113,7 @@ public class EditSavePhotoFragment extends Fragment {
 
             if (!mediaStorageDir.exists()) {
                 if (!mediaStorageDir.mkdirs()) {
-                    return ;
+                    return;
                 }
             }
 
@@ -101,9 +122,15 @@ public class EditSavePhotoFragment extends Fragment {
                     mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg"
             );
 
-            uri=Uri.fromFile(mediaFile);
+            uri = Uri.fromFile(mediaFile);
 
         }
+        if (getArguments().containsKey(SAVE_TO_GALLERY)) {
+            saveToGallery = getArguments().getBoolean(SAVE_TO_GALLERY);
+        } else {
+            saveToGallery=false;
+        }
+
 
         if (imageParameters == null) {
             return;
@@ -171,7 +198,7 @@ public class EditSavePhotoFragment extends Fragment {
                 ImageView photoImageView = (ImageView) view.findViewById(R.id.photo);
 
                 Bitmap bitmap = ((BitmapDrawable) photoImageView.getDrawable()).getBitmap();
-                Uri photoUri = ImageUtility.savePicture(getActivity(), bitmap,uri);
+                Uri photoUri = ImageUtility.savePicture(getActivity(), bitmap, uri,saveToGallery);
 
                 ((CameraActivity) getActivity()).returnPhotoUri(photoUri);
             }
